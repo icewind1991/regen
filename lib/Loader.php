@@ -15,7 +15,7 @@ class Loader {
 	 * @param string[] $prefixes
 	 * @param int $target (optional) any of the Regen::TARGET_* constants, if not provided the target will be derived from the php version
 	 */
-	static public function register($prefixes, $target = 0) {
+	public static function register($prefixes, $target = 0) {
 		if (self::$loader) {
 			return;
 		}
@@ -36,7 +36,11 @@ class Loader {
 		spl_autoload_register([self::$loader, 'loadClass'], true, true);
 	}
 
-	static public function getTarget() {
+	/**
+	 * @return int
+	 * @throws \Exception
+	 */
+	public static function getTarget() {
 		if (version_compare(PHP_VERSION, '7.0.0') >= 0) {
 			return Regen::TARGET_70;
 		}
@@ -99,7 +103,7 @@ class Loader {
 
 	public function loadClass($class) {
 		$class = trim($class, '\\');
-		if (!$this->shouldRegen($class) or class_exists($class, false)) {
+		if (!$this->shouldRegen($class) || class_exists($class, false)) {
 			return false;
 		}
 		$file = $this->composerLoader->findFile($class);

@@ -9,7 +9,8 @@ use PhpParser\NodeVisitorAbstract;
 /**
  * Check if a function is a generator
  */
-class AssignmentVisitor extends NodeVisitorAbstract {
+class AssignmentVisitor extends NodeVisitorAbstract
+{
 	/**
 	 * @var Node\Name[]
 	 */
@@ -32,7 +33,7 @@ class AssignmentVisitor extends NodeVisitorAbstract {
 			return NodeTraverser::DONT_TRAVERSE_CHILDREN;
 		}
 		if ($node instanceof Node\Expr\Assign) {
-			if (!$node->var instanceof Node\Expr\PropertyFetch) {
+			if ($node->var instanceof Node\Expr\Variable) {
 				$this->variables[] = $node->var->name;
 			}
 		}

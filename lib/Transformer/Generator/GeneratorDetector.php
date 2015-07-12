@@ -11,7 +11,7 @@ use Regen\Transformer\HasChildNodeVisitor;
  */
 class GeneratorDetector {
 	public function isGenerator(Node $function) {
-		if (!$function instanceof Node\Stmt\Function_ and !$function instanceof Node\Expr\Closure) {
+		if (!$function instanceof Node\Stmt\Function_ && !$function instanceof Node\Expr\Closure) {
 			throw new \InvalidArgumentException('Not a closure or function');
 		}
 		$traverser = new NodeTraverser();

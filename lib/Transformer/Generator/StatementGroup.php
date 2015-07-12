@@ -17,20 +17,20 @@ class StatementGroup {
 	public $state;
 
 	/**
-	 * @var StatementGroup
+	 * @var StatementGroup|null
 	 */
 	public $nextSibling;
 
 	/**
-	 * @var StatementGroup
+	 * @var StatementGroup|null
 	 */
 	public $parent;
 
 	/**
 	 * @param \PhpParser\Node[] $statements
 	 * @param int $state
-	 * @param StatementGroup $nextSibling
-	 * @param StatementGroup $parent
+	 * @param StatementGroup|null $nextSibling
+	 * @param StatementGroup|null $parent
 	 */
 	public function __construct(array $statements, $state, $nextSibling, $parent) {
 		$this->statements = $statements;
@@ -39,6 +39,9 @@ class StatementGroup {
 		$this->parent = $parent;
 	}
 
+	/**
+	 * @return null | StatementGroup
+	 */
 	public function findNextSibling() {
 		if ($this->nextSibling) {
 			return $this->nextSibling;

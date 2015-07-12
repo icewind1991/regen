@@ -2,10 +2,8 @@
 
 namespace Regen\Transformer;
 
-use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use PhpParser\PrettyPrinter\Standard;
 
 /**
  * scalar type hints and return type hints
@@ -61,7 +59,7 @@ class TypeHint implements TransformerInterface {
 				}
 			}
 			if ($node->returnType) {
-				$returnType = $node->returnType->toString();
+				$returnType = (string)$node->returnType;
 				$node->returnType = null;
 				$traverser = new NodeTraverser();
 				$traverser->addVisitor(new ReturnTypeVisitor($this->buildTypeCheck('__return', $returnType)));

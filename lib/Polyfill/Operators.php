@@ -3,10 +3,15 @@
 namespace Regen\Polyfill;
 
 class Operators {
-	static function spaceship($a, $b) {
-		if (is_string($a) and is_string($b)) {
+	/**
+	 * @param mixed $a
+	 * @param mixed $b
+	 * @return int
+	 */
+	public static function spaceship($a, $b) {
+		if (is_string($a) && is_string($b)) {
 			return strcmp($a, $b);
-		} elseif (is_array($a) and is_array($b)) {
+		} elseif (is_array($a) && is_array($b)) {
 			$a = array_values($a);
 			$b = array_values($b);
 			for ($i = 0; $i < min(count($a), count($b)); $i++) {
