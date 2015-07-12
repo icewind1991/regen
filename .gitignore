@@ -1,0 +1,5 @@
+.idea
+php-temping
+tests/clover.xml
+vendor
+composer.lock
