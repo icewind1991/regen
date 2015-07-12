@@ -83,7 +83,7 @@ class Regen {
 		}
 		$nodes = $this->traverser->traverse($nodes);
 		$extraNodes = array_reduce($this->visitor->getTransformers(),
-			function ($nodes, TransformerInterface $transformer) {
+			function($nodes, TransformerInterface $transformer) {
 				return array_merge($nodes, $transformer->getExtraNodes());
 			}, []);
 		$nodes = array_merge($nodes, $extraNodes);

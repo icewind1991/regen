@@ -4,7 +4,6 @@ namespace Regen\Transformer\Generator;
 
 use PhpParser\Node;
 use PhpParser\NodeVisitorAbstract;
-use PhpParser\PrettyPrinter\Standard;
 
 /**
  * Rewrite for statements into while loops
@@ -40,25 +39,25 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 			$statementGroup = new StatementGroup($node->stmts, $this->stateCounter->getNextState(), null, null);
 			$groups = $this->flattenStatementGroups($statementGroup);
 			$switch = $this->generateSwitch($groups);
-			$loop = new Node\Stmt\While_(new Node\Expr\PropertyFetch        (
+			$loop = new Node\Stmt\While_(new Node\Expr\PropertyFetch(
 				new Node\Expr\Variable('context'), 'active'
 			), [
 				new Node\Expr\Assign(
-					new Node\Expr\PropertyFetch        (
+					new Node\Expr\PropertyFetch(
 						new Node\Expr\Variable('context'), 'current'
 					),
-					new Node\Expr\PropertyFetch        (
+					new Node\Expr\PropertyFetch(
 						new Node\Expr\Variable('context'), 'next'
 					)
 				),
 				$switch
 			]);
 
-			$paramNames = array_map(function (Node\Param $param) {
+			$paramNames = array_map(function(Node\Param $param) {
 				return $param->name;
 			}, $node->params);
 			$allNames = array_merge($paramNames, $assignmentNames);
-			$uses = array_map(function ($name) {
+			$uses = array_map(function($name) {
 				return new Node\Expr\ClosureUse($name, true);
 			}, $allNames);
 
@@ -67,7 +66,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 				'uses' => $uses,
 				'stmts' => [$loop]
 			]);
-			$initializations = array_map(function ($name) {
+			$initializations = array_map(function($name) {
 				return new Node\Expr\Assign(new Node\Expr\Variable($name), new Node\Scalar\LNumber(0));
 			}, $assignmentNames);
 			$returnStatement = new Node\Stmt\Return_(
@@ -167,7 +166,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 	 * @return Node\Stmt\Switch_
 	 */
 	protected function generateSwitch(array $groups) {
-		$cases = array_map(function (StatementGroup $group) {
+		$cases = array_map(function(StatementGroup $group) {
 			$statements = $group->statements;
 			$lastStatement = $statements[count($statements) - 1];
 			if (!$lastStatement instanceof Node\Stmt\Return_) {
@@ -175,7 +174,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 			}
 			return new Node\Stmt\Case_(new Node\Scalar\LNumber($group->state), $statements);
 		}, $groups);
-		return new Node\Stmt\Switch_(new Node\Expr\PropertyFetch        (
+		return new Node\Stmt\Switch_(new Node\Expr\PropertyFetch(
 			new Node\Expr\Variable('context'), 'current'
 		), $cases);
 	}
@@ -201,7 +200,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 
 	protected function getStateAssignment($state) {
 		return new Node\Expr\Assign(
-			new Node\Expr\PropertyFetch        (
+			new Node\Expr\PropertyFetch(
 				new Node\Expr\Variable('context'), 'next'
 			),
 			new Node\Scalar\LNumber($state)
@@ -221,7 +220,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 	protected function generateGroupsFromStatements($statements, $parent = null, $firstState) {
 		$groupedStatements = $this->splitStatements($statements);
 		/** @var StatementGroup[] $groups */
-		$groups = array_map(function ($statements, $state) use ($parent) {
+		$groups = array_map(function($statements, $state) use ($parent) {
 			if (is_null($state)) {
 				$state = $this->stateCounter->getNextState();
 			}
@@ -250,7 +249,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 				$result[$counter] = [];
 			}
 		}
-		return array_filter($result, function (array $group) {
+		return array_filter($result, function(array $group) {
 			return count($group) > 0;
 		});
 	}

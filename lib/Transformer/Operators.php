@@ -12,6 +12,9 @@ class Operators implements TransformerInterface {
 		return ['Expr_BinaryOp_Spaceship', 'Expr_BinaryOp_Coalesce'];
 	}
 
+	/**
+	 * @param Node\Expr $expr
+	 */
 	protected function getIssetAndNotNull($expr) {
 		return new Node\Expr\BinaryOp\BooleanAnd(
 			new Node\Expr\Isset_([$expr]),

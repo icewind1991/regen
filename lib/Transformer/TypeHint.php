@@ -2,10 +2,8 @@
 
 namespace Regen\Transformer;
 
-use PhpParser\BuilderFactory;
 use PhpParser\Node;
 use PhpParser\NodeTraverser;
-use PhpParser\PrettyPrinter\Standard;
 
 /**
  * scalar type hints and return type hints
