@@ -27,7 +27,7 @@ class AnonymousClasses implements TransformerInterface {
 				$class = $node->class;
 				$name = uniqid('class_');
 				$nameNode = new Node\Name($name);
-				$class->name = $nameNode;
+				$class->name = $name;
 				$node->class = $nameNode;
 				$this->extraNodes[] = $class;
 			}

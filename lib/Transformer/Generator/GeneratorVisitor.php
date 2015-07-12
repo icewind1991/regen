@@ -33,8 +33,8 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 
 
 	public function leaveNode(Node $node) {
-		if (($node instanceof Node\Stmt\Function_ or $node instanceof Node\Expr\Closure)
-			and $this->generatorDetector->isGenerator($node)
+		if (($node instanceof Node\Stmt\Function_ || $node instanceof Node\Expr\Closure)
+			&& $this->generatorDetector->isGenerator($node)
 		) {
 			$assignmentNames = $this->assignmentFinder->getNames($node);
 			$statementGroup = new StatementGroup($node->stmts, $this->stateCounter->getNextState(), null, null);
@@ -71,14 +71,11 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 				return new Node\Expr\Assign(new Node\Expr\Variable($name), new Node\Scalar\LNumber(0));
 			}, $assignmentNames);
 			$returnStatement = new Node\Stmt\Return_(
-				new Node\Expr\New_(new Node\Name('\Regen\Polyfill\RegenIterator'), [$closure])
+				new Node\Expr\New_(new Node\Name('\Regen\Polyfill\RegenIterator'), [new Node\Arg($closure)])
 			);
 
-			$printer = new Standard();
 			$nodes = $initializations;
 			$nodes[] = $returnStatement;
-			$code = $printer->prettyPrint($nodes);
-//			return $nodes;
 			$node->stmts = $nodes;
 		} else {
 			return null;
@@ -195,7 +192,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 		} else {
 			$endStatement = $this->getStopCall();
 		}
-		if ($lastStatement instanceof Node\Stmt\Return_ or $lastStatement instanceof Node\Expr\Yield_) {
+		if ($lastStatement instanceof Node\Stmt\Return_ || $lastStatement instanceof Node\Expr\Yield_) {
 			$statements[] = $endStatement;
 		}
 		$statements[] = $lastStatement;
@@ -246,7 +243,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 		foreach ($statements as $statement) {
 			$result[$counter][] = $statement;
 			if (
-				in_array('stmts', $statement->getSubNodeNames()) or
+				in_array('stmts', $statement->getSubNodeNames()) ||
 				$statement instanceof Node\Expr\Yield_
 			) {
 				$counter++;

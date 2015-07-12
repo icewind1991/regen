@@ -77,10 +77,9 @@ class Regen {
 	}
 
 	public function regen($code) {
-		try {
-			$nodes = $this->parser->parse($code);
-		} catch (\Exception $e) {
-			throw $e;
+		$nodes = $this->parser->parse($code);
+		if (is_null($nodes)) {
+			throw new \Exception('Failed parsing code');
 		}
 		$nodes = $this->traverser->traverse($nodes);
 		$extraNodes = array_reduce($this->visitor->getTransformers(),

@@ -22,11 +22,11 @@ class RegenIterator implements \Iterator {
 		$this->context = new GeneratorContext();
 	}
 
-	function rewind() {
+	public function rewind() {
 		$this->context->rewind();
 	}
 
-	function current() {
+	public function current() {
 		if ($this->counter === 0) {
 			$callback = $this->callback;
 			$this->lastValue = $callback($this->context);
@@ -34,17 +34,17 @@ class RegenIterator implements \Iterator {
 		return $this->lastValue;
 	}
 
-	function key() {
+	public function key() {
 		return $this->counter;
 	}
 
-	function next() {
+	public function next() {
 		$this->counter++;
 		$callback = $this->callback;
 		$this->lastValue = $callback($this->context);
 	}
 
-	function valid() {
+	public function valid() {
 		return $this->context->active;
 	}
 }

@@ -6,11 +6,11 @@ use PhpParser\Node;
 use PhpParser\NodeTraverser;
 
 /**
- * Check if a function is a generator
+ * Get a list of all variables which are assigned in a function
  */
 class AssignmentFinder {
 	public function getNames(Node $function) {
-		if (!$function instanceof Node\Stmt\Function_ and !$function instanceof Node\Expr\Closure) {
+		if (!$function instanceof Node\Stmt\Function_ && !$function instanceof Node\Expr\Closure) {
 			throw new \InvalidArgumentException('Not a closure or function');
 		}
 		$traverser = new NodeTraverser();
