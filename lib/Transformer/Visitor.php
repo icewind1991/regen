@@ -22,6 +22,15 @@ class Visitor extends NodeVisitorAbstract {
 		return $this->transformers;
 	}
 
+	/**
+	 * @return Node[]
+	 */
+	public function getExtraNodes() {
+		return array_reduce($this->transformers, function ($nodes, TransformerInterface $transformer) {
+			return array_merge($nodes, $transformer->getExtraNodes());
+		}, []);
+	}
+
 	public function enterNode(Node $node) {
 		foreach ($this->transformers as $transformer) {
 			if (in_array($node->getType(), $transformer->getTypes())) {

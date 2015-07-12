@@ -6,8 +6,6 @@ use Regen\Loader;
 use Regen\Regen;
 use Regen\Tests\SourceClasses\BasicClass;
 use Regen\Tests\SourceClasses\TypeHintClass;
-use Regen\Transformer\Operators;
-use Regen\Transformer\TypeHint;
 
 class LoaderTest extends TestCase {
 	private function getLoader() {

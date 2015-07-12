@@ -12,7 +12,6 @@ use Regen\Transformer\Visitor;
  * Test cases for transformations for code where both the source and result code work in the current php version
  */
 abstract class CompatibleVisitorTest extends TestCase {
-
 	/**
 	 * @param NodeVisitor[] $visitors
 	 * @return NodeTraverser
@@ -32,17 +31,30 @@ abstract class CompatibleVisitorTest extends TestCase {
 	}
 
 	protected function assertBeforeAndAfter(array $visitors, $code, $arguments = []) {
-		$newCode = $this->transformCode($code, $visitors);
-		$this->assertNotCodeEquals($code, $newCode, 'Failed asserting that visitor transformed code');
 		$before = $this->getResultFromCode($code, $arguments);
+		$this->assertCodeResult($visitors, $code, $arguments, $before);
+	}
+
+	protected function assertCodeResult(array $visitors, $code, $arguments, $expected) {
+		$newCode = $this->transformCode($code, $visitors);
+		if (count($visitors)) {
+			$this->assertNotCodeEquals($code, $newCode, 'Failed asserting that visitor transformed code');
+		}
 		$after = $this->getResultFromCode($newCode, $arguments);
-		$this->assertEquals($before, $after);
+		$this->assertEquals($expected, $after);
 	}
 
 	protected function transformCode($code, array $visitors) {
 		$stmts = $this->parser->parse($code);
 		$traverser = $this->getTraverser($visitors);
 		$stmts = $traverser->traverse($stmts);
+		$extraNodes = [];
+		foreach ($visitors as $visitor) {
+			if ($visitor instanceof Visitor) {
+				$extraNodes = array_merge($extraNodes, $visitor->getExtraNodes());
+			}
+		}
+		$stmts = array_merge($stmts, $extraNodes);
 		return $this->printer->prettyPrintFile($stmts);
 	}
 
