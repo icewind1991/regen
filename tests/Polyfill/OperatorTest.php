@@ -1,10 +1,11 @@
 <?php
 
-namespace Regen\Tests;
+namespace Regen\Tests\Polyfill;
 
 use Regen\Polyfill\Operators;
+use Regen\Tests\TestCase;
 
-class PolyfillTest extends TestCase {
+class OperatorTest extends TestCase {
 	public function spaceshipProvider() {
 		return [
 			[0, 0, 0],

@@ -2,12 +2,12 @@
 
 namespace Regen\Tests\Transformer\Generator;
 
-use Regen\Tests\Transformer\CompatibleVisitorTest;
+use Regen\Tests\Transformer\VisitorTest;
 use Regen\Transformer\Generator\ForVisitor;
 
-class ForVisitorTest extends CompatibleVisitorTest {
+class ForVisitorTest extends VisitorTest {
 	public function testBasicLoop() {
-		$code = file_get_contents(__DIR__ . '/BasicForLoop.php');
+		$code = file_get_contents(__DIR__ . '/InputFiles/BasicForLoop.php');
 		$this->assertBeforeAndAfter(
 			[new ForVisitor()],
 			$code,
@@ -23,7 +23,7 @@ class ForVisitorTest extends CompatibleVisitorTest {
 	}
 
 	public function testEmptyLoop() {
-		$code = file_get_contents(__DIR__ . '/EmptyForLoop.php');
+		$code = file_get_contents(__DIR__ . '/InputFiles/EmptyForLoop.php');
 		$this->assertBeforeAndAfter(
 			[new ForVisitor()],
 			$code,

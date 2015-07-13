@@ -54,7 +54,11 @@ abstract class TestCase extends \PHPUnit_Framework_TestCase {
 	}
 
 	protected function skipIfVersionLowerThan($version) {
-		if (version_compare(PHP_VERSION, $version) < 0) {
+		// while php7 is still in beta
+		if ($version === '7.0.0') {
+			$version = '6.99.99';
+		}
+		if (version_compare(PHP_VERSION, $version, '<')) {
 			$this->markTestSkipped('PHP version not high enough to run test, php ' . $version . ' required');
 		}
 	}

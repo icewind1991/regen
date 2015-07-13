@@ -11,7 +11,7 @@ use Regen\Transformer\Visitor;
 /**
  * Test cases for transformations for code where both the source and result code work in the current php version
  */
-abstract class CompatibleVisitorTest extends TestCase {
+abstract class VisitorTest extends TestCase {
 	/**
 	 * @param NodeVisitor[] $visitors
 	 * @return NodeTraverser

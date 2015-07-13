@@ -2,14 +2,14 @@
 
 namespace Regen\Tests\Transformer\Generator;
 
-use Regen\Tests\Transformer\CompatibleVisitorTest;
+use Regen\Tests\Transformer\VisitorTest;
 use Regen\Transformer\Generator\ForVisitor;
 use Regen\Transformer\Generator\GeneratorVisitor;
 
-class GeneratorVisitorTest extends CompatibleVisitorTest {
+class GeneratorVisitorTest extends VisitorTest {
 	public function testBasicGenerator() {
 		$this->skipIfVersionLowerThan('5.5.0');
-		$code = file_get_contents(__DIR__ . '/BasicGenerator.php');
+		$code = file_get_contents(__DIR__ . '/InputFiles/BasicGenerator.php');
 		$this->assertBeforeAndAfter(
 			[new GeneratorVisitor()],
 			$code,
@@ -26,7 +26,7 @@ class GeneratorVisitorTest extends CompatibleVisitorTest {
 
 	public function testLoopingGenerator() {
 		$this->skipIfVersionLowerThan('5.5.0');
-		$code = file_get_contents(__DIR__ . '/LoopingGenerator.php');
+		$code = file_get_contents(__DIR__ . '/InputFiles/LoopingGenerator.php');
 		$this->assertBeforeAndAfter(
 			[new ForVisitor(), new GeneratorVisitor()],
 			$code,
