@@ -1,4 +1,7 @@
 # Regen
+[![Build Status](https://travis-ci.org/icewind1991/regen.svg?branch=master)](https://travis-ci.org/icewind1991/regen)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/icewind1991/regen/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/icewind1991/regen/?branch=master)
+[![Code Coverage](https://scrutinizer-ci.com/g/icewind1991/regen/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/icewind1991/regen/?branch=master)
 
 Regenerate php code to target older versions
 
