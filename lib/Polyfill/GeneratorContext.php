@@ -12,10 +12,6 @@ class GeneratorContext {
 		$this->next = 0;
 	}
 
-	public function next() {
-		$this->current = $this->next;
-	}
-
 	public function stop() {
 		$this->active = false;
 	}
