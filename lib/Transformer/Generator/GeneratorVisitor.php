@@ -8,8 +8,7 @@ use PhpParser\NodeVisitorAbstract;
 /**
  * Rewrite for statements into while loops
  */
-class GeneratorVisitor extends NodeVisitorAbstract
-{
+class GeneratorVisitor extends NodeVisitorAbstract {
 	/**
 	 * @var GeneratorDetector
 	 */
@@ -40,19 +39,7 @@ class GeneratorVisitor extends NodeVisitorAbstract
 			$statementGroup = new StatementGroup($node->stmts, $this->stateCounter->getNextState(), null, null);
 			$groups = $this->flattenStatementGroups($statementGroup);
 			$switch = $this->generateSwitch($groups);
-			$loop = new Node\Stmt\While_(new Node\Expr\PropertyFetch(
-				new Node\Expr\Variable('context'), 'active'
-			), [
-				new Node\Expr\Assign(
-					new Node\Expr\PropertyFetch(
-						new Node\Expr\Variable('context'), 'current'
-					),
-					new Node\Expr\PropertyFetch(
-						new Node\Expr\Variable('context'), 'next'
-					)
-				),
-				$switch
-			]);
+			$loop = $this->generateLoop($switch);
 
 			$paramNames = array_map(function (Node\Param $param) {
 				return $param->name;
@@ -82,82 +69,39 @@ class GeneratorVisitor extends NodeVisitorAbstract
 		}
 	}
 
+	protected function generateLoop(Node\Stmt\Switch_ $switch) {
+		return new Node\Stmt\While_(new Node\Expr\PropertyFetch(
+			new Node\Expr\Variable('context'), 'active'
+		), [
+			new Node\Expr\Assign(
+				new Node\Expr\PropertyFetch(
+					new Node\Expr\Variable('context'), 'current'
+				),
+				new Node\Expr\PropertyFetch(
+					new Node\Expr\Variable('context'), 'next'
+				)
+			),
+			$switch
+		]);
+	}
+
 	/**
 	 * @param StatementGroup $inputGroup
 	 * @return StatementGroup[]
 	 */
 	protected function flattenStatementGroups(StatementGroup $inputGroup) {
-		$inputGroup->statements[] = $this->getStopCall();
+		$inputGroup->statements[] = new Node\Expr\MethodCall(new Node\Expr\Variable('context'), 'stop');
 		/** @var StatementGroup[] $groups */
 		$groups = [$inputGroup];
 		$outputGroups = [];
 		while ($group = array_shift($groups)) {
 			/** @var StatementGroup $group */
-			$groupedStatements = $this->splitStatements($group->statements);
-			if (count($groupedStatements) > 1) {
-				$splitGroups = $this->generateGroupsFromStatements($group->statements, $group->parent, $group->state);
-				$groups = array_merge($groups, $splitGroups);
-			} else {
-				foreach ($group->statements as &$statement) {
-					if ($statement instanceof Node\Stmt\If_) {
-						$newGroup = $this->getIfBodyGroup($statement->stmts, $group);
-						$groups[] = $newGroup;
-						$statement->stmts = [$this->getStateAssignment($newGroup->state)];
-						if ($statement->else) {
-							$newGroup = $this->getIfBodyGroup($statement->else->stmts, $group);
-							$groups[] = $newGroup;
-							$statement->else->stmts = [$this->getStateAssignment($newGroup->state)];
-						}
-						foreach ($statement->elseifs as $elseIf) {
-							$newGroup = $this->getIfBodyGroup($elseIf->stmts, $group);
-							$groups[] = $newGroup;
-							$elseIf->stmts = [$this->getStateAssignment($newGroup->state)];
-						}
-						if (!$statement->else) {
-							if ($sibling = $group->findNextSibling()) {
-								$statement->else = new Node\Stmt\Else_([$this->getStateAssignment($sibling->state)]);
-							} else {
-								$statement->else = new Node\Stmt\Else_([$this->getStopCall()]);
-							}
-						}
-					}
+			$groupTransformer = $group->getTransformer($this->stateCounter);
 
-					if ($statement instanceof Node\Stmt\While_) {
-						if ($sibling = $group->findNextSibling()) {
-							$loopEndStatement = $this->getStateAssignment($sibling->state);
-						} else {
-							$loopEndStatement = $this->getStopCall();
-						}
-						$childStatements = $statement->stmts;
-						array_unshift($childStatements, new Node\Stmt\If_(new Node\Expr\BooleanNot($statement->cond), [
-							'stmts' => [$loopEndStatement]
-						]));
-						$inWhileState = $this->stateCounter->getNextState();
-						$childStatements[] = $this->getStateAssignment($inWhileState);
-						$oldGroupStatements = $group->statements;
-						array_pop($oldGroupStatements); //remove the while
-						$inWhileGroup = new StatementGroup($childStatements, $inWhileState,
-							$group->nextSibling, $group->parent);
-						$oldGroupStatements[] = $this->getStateAssignment($inWhileGroup->state);
-						$beforeWhileGroup = new StatementGroup($oldGroupStatements, $group->state, $inWhileGroup,
-							$group->parent);
-						$group = $beforeWhileGroup;
-						$groups[] = $inWhileGroup;
-					}
+			list($done, $new) = $groupTransformer->transformGroup($group);
 
-					if ($statement instanceof Node\Expr\Yield_) {
-						$statement = new Node\Stmt\Return_($statement->value);
-						if ($sibling = $group->findNextSibling()) {
-							array_unshift($group->statements, $this->getStateAssignment($sibling->state));
-						} else {
-							array_unshift($group->statements, $this->getStopCall());
-						}
-					}
-				}
-				if ($group) {
-					$outputGroups[] = $group;
-				}
-			}
+			$outputGroups = array_merge($outputGroups, $done);
+			$groups = array_merge($groups, $new);
 		}
 		return $outputGroups;
 	}
@@ -178,82 +122,5 @@ class GeneratorVisitor extends NodeVisitorAbstract
 		return new Node\Stmt\Switch_(new Node\Expr\PropertyFetch(
 			new Node\Expr\Variable('context'), 'current'
 		), $cases);
-	}
-
-	/**
-	 * @param Node[] $statements
-	 * @param StatementGroup $parentGroup
-	 * @return StatementGroup
-	 */
-	protected function getIfBodyGroup(array $statements, StatementGroup $parentGroup) {
-		$lastStatement = array_pop($statements);
-		if ($parentGroup->nextSibling) {
-			$endStatement = $this->getStateAssignment($parentGroup->nextSibling->state);
-		} else {
-			$endStatement = $this->getStopCall();
-		}
-		if ($lastStatement instanceof Node\Stmt\Return_ || $lastStatement instanceof Node\Expr\Yield_) {
-			$statements[] = $endStatement;
-		}
-		if (!is_null($lastStatement)) {
-			$statements[] = $lastStatement;
-		}
-		return new StatementGroup($statements, $this->stateCounter->getNextState(), null, $parentGroup);
-	}
-
-	protected function getStateAssignment($state) {
-		return new Node\Expr\Assign(
-			new Node\Expr\PropertyFetch(
-				new Node\Expr\Variable('context'), 'next'
-			),
-			new Node\Scalar\LNumber($state)
-		);
-	}
-
-	protected function getStopCall() {
-		return new Node\Expr\MethodCall(new Node\Expr\Variable('context'), 'stop');
-	}
-
-	/**
-	 * @param Node[] $statements
-	 * @param StatementGroup|null $parent
-	 * @param int|null $firstState
-	 * @return StatementGroup[]
-	 */
-	protected function generateGroupsFromStatements($statements, $parent = null, $firstState = null) {
-		$groupedStatements = $this->splitStatements($statements);
-		/** @var StatementGroup[] $groups */
-		$groups = array_map(function ($statements, $state) use ($parent) {
-			if (is_null($state)) {
-				$state = $this->stateCounter->getNextState();
-			}
-			return new StatementGroup($statements, $state, null, $parent);
-		}, $groupedStatements, [$firstState]);
-		for ($i = 0; $i < (count($groups) - 1); $i++) {
-			$groups[$i]->nextSibling = $groups[$i + 1];
-		}
-		return $groups;
-	}
-
-	/**
-	 * @param Node[] $statements
-	 * @return Node[][]
-	 */
-	protected function splitStatements($statements) {
-		$result = [];
-		$counter = 0;
-		foreach ($statements as $statement) {
-			$result[$counter][] = $statement;
-			if (
-				in_array('stmts', $statement->getSubNodeNames()) ||
-				$statement instanceof Node\Expr\Yield_
-			) {
-				$counter++;
-				$result[$counter] = [];
-			}
-		}
-		return array_filter($result, function (array $group) {
-			return count($group) > 0;
-		});
 	}
 }

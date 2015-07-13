@@ -2,7 +2,6 @@
 
 namespace Regen\Transformer\Generator;
 
-
 use PhpParser\Node;
 
 class StatementGroup {
@@ -50,5 +49,13 @@ class StatementGroup {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param StateCounter $counter
+	 * @return StatementGroupTransformer
+	 */
+	public function getTransformer(StateCounter $counter) {
+		return new StatementGroupTransformer($counter);
 	}
 }
