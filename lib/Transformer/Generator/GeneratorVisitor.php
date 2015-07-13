@@ -44,29 +44,31 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 			$paramNames = array_map(function (Node\Param $param) {
 				return $param->name;
 			}, $node->params);
-			$allNames = array_merge($paramNames, $assignmentNames);
-			$uses = array_map(function ($name) {
-				return new Node\Expr\ClosureUse($name, true);
-			}, $allNames);
 
-			$closure = new Node\Expr\Closure([
-				'params' => [new Node\Param('context', null, '\Regen\Polyfill\GeneratorContext')],
-				'uses' => $uses,
-				'stmts' => [$loop]
-			]);
-			$initializations = array_map(function ($name) {
+			$closure = $this->getClosure($loop, array_merge($paramNames, $assignmentNames));
+			$node->stmts = array_map(function ($name) {
 				return new Node\Expr\Assign(new Node\Expr\Variable($name), new Node\Scalar\LNumber(0));
 			}, $assignmentNames);
 			$returnStatement = new Node\Stmt\Return_(
 				new Node\Expr\New_(new Node\Name('\Regen\Polyfill\RegenIterator'), [new Node\Arg($closure)])
 			);
 
-			$nodes = $initializations;
-			$nodes[] = $returnStatement;
-			$node->stmts = $nodes;
+			$node->stmts[] = $returnStatement;
 		} else {
 			return null;
 		}
+	}
+
+	protected function getClosure($loop, $names) {
+		$uses = array_map(function ($name) {
+			return new Node\Expr\ClosureUse($name, true);
+		}, $names);
+
+		return new Node\Expr\Closure([
+			'params' => [new Node\Param('context', null, '\Regen\Polyfill\GeneratorContext')],
+			'uses' => $uses,
+			'stmts' => [$loop]
+		]);
 	}
 
 	protected function generateLoop(Node\Stmt\Switch_ $switch) {
