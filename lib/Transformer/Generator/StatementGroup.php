@@ -39,7 +39,7 @@ class StatementGroup {
 	}
 
 	/**
-	 * @return null | StatementGroup
+	 * @return StatementGroup|null
 	 */
 	public function findNextSibling() {
 		if ($this->nextSibling) {

@@ -12,14 +12,16 @@ class YieldStatementGroupTransformer extends StatementGroupTransformer {
 	public function transformGroup(StatementGroup $group) {
 		$statement = array_pop($group->statements);
 
-		$newStatement = new Node\Stmt\Return_($statement->value);
-		if ($sibling = $group->findNextSibling()) {
-			array_push($group->statements, $this->getStateAssignment($sibling->state));
-		} else {
-			array_push($group->statements, $this->getStopCall());
-		}
+		if ($statement instanceof Node\Expr\Yield_) {
+			$newStatement = new Node\Stmt\Return_($statement->value);
+			if ($sibling = $group->findNextSibling()) {
+				array_push($group->statements, $this->getStateAssignment($sibling->state));
+			} else {
+				array_push($group->statements, $this->getStopCall());
+			}
 
-		array_push($group->statements, $newStatement);
+			array_push($group->statements, $newStatement);
+		}
 
 		return [
 			[$group],
