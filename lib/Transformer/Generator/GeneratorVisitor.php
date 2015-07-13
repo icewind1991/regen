@@ -3,12 +3,12 @@
 namespace Regen\Transformer\Generator;
 
 use PhpParser\Node;
-use PhpParser\NodeVisitorAbstract;
+use Regen\Transformer\BaseVisitor;
 
 /**
  * Rewrite for statements into while loops
  */
-class GeneratorVisitor extends NodeVisitorAbstract {
+class GeneratorVisitor extends BaseVisitor {
 	/**
 	 * @var GeneratorDetector
 	 */
@@ -47,7 +47,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 
 			$closure = $this->getClosure($loop, array_merge($paramNames, $assignmentNames));
 			$node->stmts = array_map(function ($name) {
-				return new Node\Expr\Assign(new Node\Expr\Variable($name), new Node\Scalar\LNumber(0));
+				return $this->assignValue($name, null, 0);
 			}, $assignmentNames);
 			$returnStatement = new Node\Stmt\Return_(
 				new Node\Expr\New_(new Node\Name('\Regen\Polyfill\RegenIterator'), [new Node\Arg($closure)])
@@ -72,17 +72,8 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 	}
 
 	protected function generateLoop(Node\Stmt\Switch_ $switch) {
-		return new Node\Stmt\While_(new Node\Expr\PropertyFetch(
-			new Node\Expr\Variable('context'), 'active'
-		), [
-			new Node\Expr\Assign(
-				new Node\Expr\PropertyFetch(
-					new Node\Expr\Variable('context'), 'current'
-				),
-				new Node\Expr\PropertyFetch(
-					new Node\Expr\Variable('context'), 'next'
-				)
-			),
+		return new Node\Stmt\While_($this->getProperty('context', 'active'), [
+			$this->assignValue('context', 'current', $this->getProperty('context', 'next')),
 			$switch
 		]);
 	}
@@ -92,7 +83,7 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 	 * @return StatementGroup[]
 	 */
 	protected function flattenStatementGroups(StatementGroup $inputGroup) {
-		$inputGroup->statements[] = new Node\Expr\MethodCall(new Node\Expr\Variable('context'), 'stop');
+		$inputGroup->statements[] = $this->getMethodCall('context', 'stop');
 		/** @var StatementGroup[] $groups */
 		$groups = [$inputGroup];
 		$outputGroups = [];
@@ -119,10 +110,8 @@ class GeneratorVisitor extends NodeVisitorAbstract {
 			if (!$lastStatement instanceof Node\Stmt\Return_) {
 				$statements[] = new Node\Stmt\Break_();
 			}
-			return new Node\Stmt\Case_(new Node\Scalar\LNumber($group->state), $statements);
+			return new Node\Stmt\Case_($this->getValue($group->state), $statements);
 		}, $groups);
-		return new Node\Stmt\Switch_(new Node\Expr\PropertyFetch(
-			new Node\Expr\Variable('context'), 'current'
-		), $cases);
+		return new Node\Stmt\Switch_($this->getProperty('context', 'current'), $cases);
 	}
 }
