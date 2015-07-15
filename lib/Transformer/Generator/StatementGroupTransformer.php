@@ -117,4 +117,16 @@ class StatementGroupTransformer {
 	protected function getStopCall() {
 		return new Node\Expr\MethodCall(new Node\Expr\Variable('context'), 'stop');
 	}
+
+	/**
+	 * @param StatementGroup $group
+	 * @return Node\Stmt;
+	 */
+	protected function getGroupEndCall(StatementGroup $group) {
+		if ($sibling = $group->findNextSibling()) {
+			return $this->getStateAssignment($sibling->state);
+		} else {
+			return $this->getStopCall();
+		}
+	}
 }

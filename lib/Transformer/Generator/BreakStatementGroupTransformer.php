@@ -37,11 +37,7 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 					$activeGroup = $activeGroup->parent;
 				}
 			}
-			if ($sibling = $activeGroup->findNextSibling()) {
-				array_push($group->statements, $this->getStateAssignment($sibling->state));
-			} else {
-				array_push($group->statements, $this->getStopCall());
-			}
+			array_push($group->statements, $this->getGroupEndCall($activeGroup));
 		}
 
 		return [

@@ -26,11 +26,7 @@ class IfStatementGroupTransformer extends StatementGroupTransformer {
 			$elseIf->stmts = [$this->getStateAssignment($newGroup->state)];
 		}
 		if (!$statement->else) {
-			if ($sibling = $group->findNextSibling()) {
-				$statement->else = new Node\Stmt\Else_([$this->getStateAssignment($sibling->state)]);
-			} else {
-				$statement->else = new Node\Stmt\Else_([$this->getStopCall()]);
-			}
+			$statement->else = new Node\Stmt\Else_([$this->getGroupEndCall($group)]);
 		}
 		return [
 			[$group],
