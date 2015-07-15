@@ -25,7 +25,7 @@ class WhileStatementGroupTransformer extends StatementGroupTransformer {
 		$childStatements[] = $this->getStateAssignment($inWhileState);
 		$oldGroupStatements = $group->statements;
 		array_pop($oldGroupStatements); //remove the while
-		$inWhileGroup = $this->buildGroupForStatements($childStatements, $inWhileState, $group->nextSibling, $group->parent);
+		$inWhileGroup = $this->buildGroupForStatements($childStatements, $inWhileState, $group->nextSibling, $group);
 		$oldGroupStatements[] = $this->getStateAssignment($inWhileGroup->state);
 		$beforeWhileGroup = $this->buildGroupForStatements($oldGroupStatements, $group->state, $inWhileGroup, $group->parent);
 

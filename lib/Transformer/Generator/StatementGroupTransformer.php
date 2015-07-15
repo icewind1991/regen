@@ -44,8 +44,10 @@ class StatementGroupTransformer {
 		foreach ($statements as $statement) {
 			$result[$counter][] = $statement;
 			if (
-				in_array('stmts', $statement->getSubNodeNames()) ||
-				$statement instanceof Node\Expr\Yield_
+				$statement instanceof Node\Stmt\If_ ||
+				$statement instanceof Node\Stmt\While_ ||
+				$statement instanceof Node\Expr\Yield_ ||
+				$statement instanceof Node\Stmt\Break_
 			) {
 				$counter++;
 				$result[$counter] = [];
@@ -74,6 +76,8 @@ class StatementGroupTransformer {
 				return new WhileStatementGroup($statements, $state, $sibling, $parent);
 			case 'Expr_Yield':
 				return new YieldStatementGroup($statements, $state, $sibling, $parent);
+			case 'Stmt_Break':
+				return new BreakStatementGroup($statements, $state, $sibling, $parent);
 			default:
 				return new StatementGroup($statements, $state, $sibling, $parent);
 		}

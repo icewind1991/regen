@@ -50,9 +50,8 @@ class IfStatementGroupTransformer extends StatementGroupTransformer {
 		} else {
 			$endStatement = $this->getStopCall();
 		}
-		if ($lastStatement instanceof Node\Stmt\Return_ || $lastStatement instanceof Node\Expr\Yield_) {
-			$statements[] = $endStatement;
-		}
+		$statements[] = $endStatement;
+
 		if (!is_null($lastStatement)) {
 			$statements[] = $lastStatement;
 		}
