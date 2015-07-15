@@ -107,6 +107,7 @@ class StatementGroupTransformer {
 
 	/**
 	 * @param integer $state
+	 * @return Node\Expr\Assign
 	 */
 	protected function getStateAssignment($state) {
 		return new Node\Expr\Assign(
@@ -117,13 +118,16 @@ class StatementGroupTransformer {
 		);
 	}
 
+	/**
+	 * @return Node\Expr\MethodCall
+	 */
 	protected function getStopCall() {
 		return new Node\Expr\MethodCall(new Node\Expr\Variable('context'), 'stop');
 	}
 
 	/**
 	 * @param StatementGroup $group
-	 * @return Node\Stmt
+	 * @return Node\Expr
 	 */
 	protected function getGroupEndCall(StatementGroup $group) {
 		if ($sibling = $group->findNextSibling()) {
