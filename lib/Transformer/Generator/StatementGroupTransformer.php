@@ -105,6 +105,9 @@ class StatementGroupTransformer {
 		return $groups;
 	}
 
+	/**
+	 * @param integer $state
+	 */
 	protected function getStateAssignment($state) {
 		return new Node\Expr\Assign(
 			new Node\Expr\PropertyFetch(
