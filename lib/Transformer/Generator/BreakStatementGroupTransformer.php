@@ -56,11 +56,11 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 				$count--;
 			}
 			if ($count > 0) {
-				if (!$activeGroup->parent) {
-					throw new \Exception('invalid break statement');
-				}
 				$activeGroup = $activeGroup->parent;
 			}
+		}
+		if (is_null($activeGroup)) {
+			throw new \Exception('invalid break statement');
 		}
 		return $activeGroup;
 	}

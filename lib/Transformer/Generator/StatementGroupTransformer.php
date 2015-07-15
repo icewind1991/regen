@@ -120,7 +120,7 @@ class StatementGroupTransformer {
 
 	/**
 	 * @param StatementGroup $group
-	 * @return Node\Stmt;
+	 * @return Node\Stmt
 	 */
 	protected function getGroupEndCall(StatementGroup $group) {
 		if ($sibling = $group->findNextSibling()) {
