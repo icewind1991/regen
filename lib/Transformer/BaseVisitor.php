@@ -3,6 +3,7 @@
 namespace Regen\Transformer;
 
 use PhpParser\Node;
+use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 
 class BaseVisitor extends NodeVisitorAbstract {
@@ -55,5 +56,18 @@ class BaseVisitor extends NodeVisitorAbstract {
 			return new Node\Scalar\LNumber($value);
 		}
 		throw new \InvalidArgumentException();
+	}
+
+	/**
+	 * @param Node[] $nodes
+	 * @param NodeVisitorAbstract[] $visitors
+	 * @return Node[]
+	 */
+	protected function traverseNodes($nodes, $visitors) {
+		$traverser = new NodeTraverser();
+		foreach ($visitors as $visitor) {
+			$traverser->addVisitor($visitor);
+		}
+		return $traverser->traverse($nodes);
 	}
 }

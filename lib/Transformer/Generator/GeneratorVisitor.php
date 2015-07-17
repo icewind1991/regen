@@ -31,10 +31,11 @@ class GeneratorVisitor extends BaseVisitor {
 	}
 
 
-	public function leaveNode(Node $node) {
+	public function enterNode(Node $node) {
 		if (($node instanceof Node\Stmt\Function_ || $node instanceof Node\Expr\Closure)
 			&& $this->generatorDetector->isGenerator($node)
 		) {
+			list($node) = $this->traverseNodes([$node], [new ForVisitor()]);
 			$assignmentNames = $this->assignmentFinder->getNames($node);
 			$statementGroup = new StatementGroup($node->stmts, $this->stateCounter->getNextState(), null, null);
 			$groups = $this->flattenStatementGroups($statementGroup);
@@ -54,6 +55,7 @@ class GeneratorVisitor extends BaseVisitor {
 			);
 
 			$node->stmts[] = $returnStatement;
+			return $node;
 		} else {
 			return null;
 		}

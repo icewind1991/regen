@@ -28,13 +28,13 @@ class GeneratorVisitorTest extends VisitorTest {
 		$this->skipIfVersionLowerThan('5.5.0');
 		$code = file_get_contents(__DIR__ . '/InputFiles/LoopingGenerator.php');
 		$this->assertBeforeAndAfter(
-			[new ForVisitor(), new GeneratorVisitor()],
+			[new GeneratorVisitor()],
 			$code,
 			[1, 5, 2]
 		);
 
 		$this->assertCodeResult(
-			[new ForVisitor(), new GeneratorVisitor()],
+			[new GeneratorVisitor()],
 			$code,
 			[1, 5, 2],
 			[1, 3, 5]
@@ -45,13 +45,13 @@ class GeneratorVisitorTest extends VisitorTest {
 		$this->skipIfVersionLowerThan('5.5.0');
 		$code = file_get_contents(__DIR__ . '/InputFiles/BreakLoopingGenerator.php');
 		$this->assertBeforeAndAfter(
-			[new ForVisitor(), new GeneratorVisitor()],
+			[new GeneratorVisitor()],
 			$code,
 			[4, 3]
 		);
 
 		$this->assertCodeResult(
-			[new ForVisitor(), new GeneratorVisitor()],
+			[new GeneratorVisitor()],
 			$code,
 			[4, 3],
 			[1, 2, 3, 99]
@@ -62,13 +62,13 @@ class GeneratorVisitorTest extends VisitorTest {
 		$this->skipIfVersionLowerThan('5.5.0');
 		$code = file_get_contents(__DIR__ . '/InputFiles/DeepBreakLoopingGenerator.php');
 		$this->assertBeforeAndAfter(
-			[new ForVisitor(), new GeneratorVisitor()],
+			[new GeneratorVisitor()],
 			$code,
 			[15, 3]
 		);
 
 		$this->assertCodeResult(
-			[new ForVisitor(), new GeneratorVisitor()],
+			[new GeneratorVisitor()],
 			$code,
 			[15, 3],
 			[3, 6, 9, 12, 15, 99]
