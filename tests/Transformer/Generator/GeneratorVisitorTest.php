@@ -74,4 +74,72 @@ class GeneratorVisitorTest extends VisitorTest {
 			[3, 6, 9, 12, 15, 99]
 		);
 	}
+
+	public function testSwitchGenerator() {
+		$this->skipIfVersionLowerThan('5.5.0');
+		$code = file_get_contents(__DIR__ . '/InputFiles/SwitchGenerator.php');
+		$this->assertBeforeAndAfter(
+			[new GeneratorVisitor()],
+			$code,
+			[0, 12, 13]
+		);
+
+		$this->assertCodeResult(
+			[new GeneratorVisitor()],
+			$code,
+			[0, 12, 13],
+			[1, 'end']
+		);
+	}
+
+	public function testSwitchGeneratorNoBreak() {
+		$this->skipIfVersionLowerThan('5.5.0');
+		$code = file_get_contents(__DIR__ . '/InputFiles/SwitchGenerator.php');
+		$this->assertBeforeAndAfter(
+			[new GeneratorVisitor()],
+			$code,
+			[1, 12, 13]
+		);
+
+		$this->assertCodeResult(
+			[new GeneratorVisitor()],
+			$code,
+			[1, 12, 13],
+			[2, 3, 'end']
+		);
+	}
+
+	public function testSwitchGeneratorNonConst() {
+		$this->skipIfVersionLowerThan('5.5.0');
+		$code = file_get_contents(__DIR__ . '/InputFiles/SwitchGenerator.php');
+		$this->assertBeforeAndAfter(
+			[new GeneratorVisitor()],
+			$code,
+			[12, 12, 13]
+		);
+
+		$this->assertCodeResult(
+			[new GeneratorVisitor()],
+			$code,
+			[12, 12, 13],
+			[13, 'end']
+		);
+	}
+
+	public function testSwitchGeneratorDefault() {
+		$this->skipIfVersionLowerThan('5.5.0');
+		$code = file_get_contents(__DIR__ . '/InputFiles/SwitchGenerator.php');
+		$this->assertBeforeAndAfter(
+			[new GeneratorVisitor()],
+			$code,
+			[99, 12, 13]
+		);
+
+		$this->assertCodeResult(
+			[new GeneratorVisitor()],
+			$code,
+			[99, 12, 13],
+			[-1, 'end']
+		);
+	}
 }

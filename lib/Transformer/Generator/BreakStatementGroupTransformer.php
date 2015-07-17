@@ -51,7 +51,8 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 		$activeGroup = $group->parent;
 		while ($activeGroup && ($count > 0)) {
 			if (
-				$activeGroup instanceof WhileStatementGroup
+				$activeGroup instanceof WhileStatementGroup ||
+				$activeGroup instanceof SwitchStatementGroup
 			) {
 				$count--;
 			}
