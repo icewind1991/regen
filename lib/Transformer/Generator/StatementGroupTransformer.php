@@ -101,9 +101,7 @@ class StatementGroupTransformer {
 			return $this->buildGroupForStatements($statements, $state, null, $group->parent);
 		}, $splitStatement, [$group->state]);
 
-		for ($i = 0; $i < (count($groups) - 1); $i++) {
-			$groups[$i]->nextSibling = $groups[$i + 1];
-		}
+		$this->setNextSiblings($groups);
 		$groups[count($groups) - 1]->nextSibling = $group->nextSibling;
 		return $groups;
 	}
@@ -137,6 +135,15 @@ class StatementGroupTransformer {
 			return $this->getStateAssignment($sibling->state);
 		} else {
 			return $this->getStopCall();
+		}
+	}
+
+	/**
+	 * @param StatementGroup[] $groups
+	 */
+	protected function setNextSiblings($groups) {
+		for ($i = 0; ($i < count($groups) - 1); $i++) {
+			$groups[$i]->nextSibling = $groups[$i + 1];
 		}
 	}
 }

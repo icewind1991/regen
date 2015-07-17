@@ -18,9 +18,7 @@ class SwitchStatementGroupTransformer extends StatementGroupTransformer {
 				$newGroups = array_merge($newGroups, $this->transformCase($case, $group));
 			}
 
-			for ($i = 0; ($i < count($newGroups) - 1); $i++) {
-				$newGroups[$i]->nextSibling = $newGroups[$i + 1];
-			}
+			$this->setNextSiblings($newGroups);
 		}
 
 
