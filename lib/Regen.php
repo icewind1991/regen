@@ -12,6 +12,7 @@ use Regen\Transformer\Generator\GeneratorVisitor;
 use Regen\Transformer\Operators;
 use Regen\Transformer\TransformerInterface;
 use Regen\Transformer\TypeHint;
+use Regen\Transformer\VariadicFunctionVisitor;
 use Regen\Transformer\Visitor;
 
 class Regen {
@@ -66,6 +67,9 @@ class Regen {
 			$this->addTransformer(new TypeHint());
 			$this->addTransformer(new Operators());
 			$this->addTransformer(new AnonymousClasses());
+		}
+		if ($target < self::TARGET_56) {
+			$this->traverser->addVisitor(new VariadicFunctionVisitor());
 		}
 		if ($target < self::TARGET_55) {
 			$this->traverser->addVisitor(new GeneratorVisitor());
