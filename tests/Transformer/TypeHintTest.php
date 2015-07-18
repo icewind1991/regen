@@ -47,6 +47,29 @@ class TypeHintTest extends VisitorTest {
 				[1],
 				null
 			);
+			$this->fail('Expected return type error');
+		} catch (\TypeError $e) {
+			$this->assertTrue(true);
+		}
+	}
+
+	public function testReturnTypeNoReturn() {
+		$code = file_get_contents(__DIR__ . '/InputFiles/ReturnTypeNoReturn.php');
+		$this->assertCodeResult(
+			[$this->visitorFromTransformer(new TypeHint())],
+			$code,
+			['aaa'],
+			'aaa'
+		);
+
+		try {
+			$this->assertCodeResult(
+				[$this->visitorFromTransformer(new TypeHint())],
+				$code,
+				['a'],
+				null
+			);
+			$this->fail('Expected return type error');
 		} catch (\TypeError $e) {
 			$this->assertTrue(true);
 		}
