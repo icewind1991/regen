@@ -16,7 +16,7 @@ class ContinueStatementGroupTransformer extends BreakStatementGroupTransformer {
 			$count = $this->getCount($statement);
 			$targetGroup = $this->getTargetGroup($group, $count);
 			// start of the loop is saved in the next group
-			array_push($group->statements, $this->getStateAssignment($targetGroup->nextSibling->state));
+			array_push($group->statements, $this->getStateAssignment($targetGroup->state));
 		}
 
 		return [
@@ -27,6 +27,6 @@ class ContinueStatementGroupTransformer extends BreakStatementGroupTransformer {
 
 
 	protected function parentGroupCounts(StatementGroup $group) {
-		return $group instanceof WhileStatementGroup;
+		return $group instanceof LoopBodyStatementGroup;
 	}
 }
