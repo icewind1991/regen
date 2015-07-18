@@ -48,7 +48,8 @@ class StatementGroupTransformer {
 				$statement instanceof Node\Stmt\While_ ||
 				$statement instanceof Node\Expr\Yield_ ||
 				$statement instanceof Node\Stmt\Break_ ||
-				$statement instanceof Node\Stmt\Switch_
+				$statement instanceof Node\Stmt\Switch_ ||
+				$statements instanceof Node\Stmt\Continue_
 			) {
 				$counter++;
 				$result[$counter] = [];
@@ -81,6 +82,8 @@ class StatementGroupTransformer {
 				return new BreakStatementGroup($statements, $state, $sibling, $parent);
 			case 'Stmt_Switch':
 				return new SwitchStatementGroup($statements, $state, $sibling, $parent);
+			case 'Stmt_Continue':
+				return new ContinueStatementGroup($statements, $state, $sibling, $parent);
 			default:
 				return new StatementGroup($statements, $state, $sibling, $parent);
 		}

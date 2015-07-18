@@ -13,7 +13,7 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 		$statement = array_pop($group->statements);
 
 		if ($statement instanceof Node\Stmt\Break_) {
-			$count = $this->getBreakCount($statement);
+			$count = $this->getCount($statement);
 			$targetGroup = $this->getTargetGroup($group, $count);
 			array_push($group->statements, $this->getGroupEndCall($targetGroup));
 		}
@@ -25,11 +25,11 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 	}
 
 	/**
-	 * @param Node\Stmt\Break_ $statement
+	 * @param Node\Stmt\Break_|Node\Stmt\Continue_ $statement
 	 * @return int
 	 * @throws \Exception
 	 */
-	protected function getBreakCount(Node\Stmt\Break_ $statement) {
+	protected function getCount($statement) {
 		if ($statement->num) {
 			if ($statement->num instanceof Node\Scalar\LNumber) {
 				return $statement->num->value;
@@ -41,6 +41,10 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 		}
 	}
 
+	protected function parentGroupCounts(StatementGroup $group) {
+		return $group instanceof WhileStatementGroup || $group instanceof SwitchStatementGroup;
+	}
+
 	/**
 	 * @param StatementGroup $group
 	 * @param int $count
@@ -50,10 +54,7 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 	protected function getTargetGroup(StatementGroup $group, $count) {
 		$activeGroup = $group->parent;
 		while ($activeGroup && ($count > 0)) {
-			if (
-				$activeGroup instanceof WhileStatementGroup ||
-				$activeGroup instanceof SwitchStatementGroup
-			) {
+			if ($this->parentGroupCounts($activeGroup)) {
 				$count--;
 			}
 			if ($count > 0) {

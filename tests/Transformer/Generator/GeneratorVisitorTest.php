@@ -142,4 +142,21 @@ class GeneratorVisitorTest extends VisitorTest {
 			[-1, 'end']
 		);
 	}
+
+	public function testContinueGenerator() {
+		$this->skipIfVersionLowerThan('5.5.0');
+		$code = file_get_contents(__DIR__ . '/InputFiles/ContinueGenerator.php');
+		$this->assertBeforeAndAfter(
+			[new GeneratorVisitor()],
+			$code,
+			[1, 5]
+		);
+
+		$this->assertCodeResult(
+			[new GeneratorVisitor()],
+			$code,
+			[1, 5],
+			[1, 3]
+		);
+	}
 }

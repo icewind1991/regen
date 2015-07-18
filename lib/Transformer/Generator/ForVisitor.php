@@ -3,12 +3,12 @@
 namespace Regen\Transformer\Generator;
 
 use PhpParser\Node;
-use PhpParser\NodeVisitorAbstract;
+use Regen\Transformer\BaseVisitor;
 
 /**
  * Rewrite for statements into while loops
  */
-class ForVisitor extends NodeVisitorAbstract {
+class ForVisitor extends BaseVisitor {
 	public function leaveNode(Node $node) {
 		if ($node instanceof Node\Stmt\For_) {
 			$conditions = $node->cond;
@@ -17,6 +17,7 @@ class ForVisitor extends NodeVisitorAbstract {
 				$mainCond = new Node\Scalar\LNumber(1);
 			}
 			$body = array_merge($conditions, $node->stmts, $node->loop);
+			$body = $this->traverseNodes($body, [new ForContinueVisitor($node->loop)]);
 			$nodes = $node->init;
 			$nodes[] = new Node\Stmt\While_($mainCond, $body);
 			return $nodes;
