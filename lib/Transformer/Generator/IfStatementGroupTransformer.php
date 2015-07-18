@@ -41,11 +41,7 @@ class IfStatementGroupTransformer extends StatementGroupTransformer {
 	 */
 	protected function getIfBodyGroup(array $statements, StatementGroup $parentGroup) {
 		$lastStatement = array_pop($statements);
-		if ($sibling = $parentGroup->findNextSibling()) {
-			$endStatement = $this->getStateAssignment($sibling->state);
-		} else {
-			$endStatement = $this->getStopCall();
-		}
+		$endStatement = $this->getGroupEndCall($parentGroup);
 		$statements[] = $endStatement;
 
 		if (!is_null($lastStatement)) {
