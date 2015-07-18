@@ -7,6 +7,10 @@ use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitorAbstract;
 
 class BaseVisitor extends NodeVisitorAbstract {
+	protected function isFunctionOrClosure(Node $node) {
+		return $node instanceof Node\Stmt\Function_ || $node instanceof Node\Expr\Closure;
+	}
+
 	/**
 	 * @param string $variable
 	 * @param string $method

@@ -7,10 +7,11 @@ use PhpParser\Node;
 class VariadicFunctionVisitor extends BaseVisitor {
 
 	public function leaveNode(Node $node) {
-		if ($node instanceof Node\Stmt\Function_ or $node instanceof Node\Expr\Closure) {
+		if ($this->isFunctionOrClosure($node)) {
+			/** @var Node\Stmt\Function_|Node\Expr\Closure $node */
 			$params = $node->params;
 			$lastParam = array_pop($params);
-			if ($lastParam instanceof Node\Param && $lastParam->variadic) {
+			if ($this->isVariadic($lastParam)) {
 				$node->params = [];
 				$getParams = $this->assignValue($lastParam->name, null, new Node\Expr\FuncCall(new Node\Name('func_get_args')));
 				$assignments = array_map(function (Node\Param $param) use ($lastParam) {
@@ -25,5 +26,13 @@ class VariadicFunctionVisitor extends BaseVisitor {
 		} else {
 			return null;
 		}
+	}
+
+	/**
+	 * @param Node\Param|null $param
+	 * @return bool
+	 */
+	protected function isVariadic($param) {
+		return $param instanceof Node\Param && $param->variadic;
 	}
 }

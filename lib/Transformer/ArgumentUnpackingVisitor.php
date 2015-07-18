@@ -16,8 +16,8 @@ class ArgumentUnpackingVisitor extends BaseVisitor {
 						return new Node\Expr\ArrayItem($arg->value);
 					}, $args);
 					$allArgs = new Node\Expr\FuncCall(new Node\Name('array_merge'), [
-						new Node\Expr\Array_($argumentValues),
-						$lastArg->value
+						new Node\Arg(new Node\Expr\Array_($argumentValues)),
+						new Node\Arg($lastArg->value)
 					]);
 					return new Node\Expr\FuncCall(new Node\Name('call_user_func_array'), [
 						new Node\Arg(new Node\Scalar\String_($node->name)),
