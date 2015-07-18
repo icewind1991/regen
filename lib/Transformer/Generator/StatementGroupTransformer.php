@@ -71,6 +71,8 @@ class StatementGroupTransformer {
 				return new IfStatementGroup($statements, $state, $sibling, $parent);
 			case 'Stmt_While':
 				return new WhileStatementGroup($statements, $state, $sibling, $parent);
+			case 'Stmt_Do':
+				return new DoWhileStatementGroup($statements, $state, $sibling, $parent);
 			case 'Expr_Yield':
 				return new YieldStatementGroup($statements, $state, $sibling, $parent);
 			case 'Stmt_Break':

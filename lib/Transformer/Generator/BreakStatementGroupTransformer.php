@@ -42,7 +42,9 @@ class BreakStatementGroupTransformer extends StatementGroupTransformer {
 	}
 
 	protected function parentGroupCounts(StatementGroup $group) {
-		return $group instanceof WhileStatementGroup || $group instanceof SwitchStatementGroup;
+		return $group instanceof WhileStatementGroup ||
+		$group instanceof SwitchStatementGroup ||
+		$group instanceof DoWhileStatementGroup;
 	}
 
 	/**

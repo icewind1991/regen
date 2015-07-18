@@ -159,4 +159,21 @@ class GeneratorVisitorTest extends VisitorTest {
 			[1, 3]
 		);
 	}
+
+	public function testDoWhileGenerator() {
+		$this->skipIfVersionLowerThan('5.5.0');
+		$code = file_get_contents(__DIR__ . '/InputFiles/DoWhileGenerator.php');
+		$this->assertBeforeAndAfter(
+			[new GeneratorVisitor()],
+			$code,
+			[1, 5]
+		);
+
+		$this->assertCodeResult(
+			[new GeneratorVisitor()],
+			$code,
+			[1, 5],
+			[1, 2, 3, 4]
+		);
+	}
 }
