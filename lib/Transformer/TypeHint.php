@@ -52,21 +52,35 @@ class TypeHint implements TransformerInterface {
 			$node instanceof Node\Stmt\Function_ ||
 			$node instanceof Node\Expr\Closure
 		) {
-			foreach ($node->params as $param) {
-				if ($param->type) {
-					$typeName = $param->type->toString();
-					if (isset($this->typeChecks[$typeName])) {
-						array_unshift($node->stmts, $this->buildTypeCheck($param->name, $typeName));
-						$param->type = null;
-					}
+			$this->applyParamType($node);
+			$this->applyReturnType($node);
+		}
+	}
+
+	/**
+	 * @param Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure $node
+	 */
+	protected function applyReturnType($node) {
+		if ($node->returnType) {
+			$returnType = (string)$node->returnType;
+			$node->returnType = null;
+			$traverser = new NodeTraverser();
+			$traverser->addVisitor(new ReturnTypeVisitor($this->buildTypeCheck('__return', $returnType)));
+			$node->stmts = $traverser->traverse($node->stmts);
+		}
+	}
+
+	/**
+	 * @param Node\Stmt\ClassMethod|Node\Stmt\Function_|Node\Expr\Closure $node
+	 */
+	protected function applyParamType($node) {
+		foreach ($node->params as $param) {
+			if ($param->type) {
+				$typeName = $param->type->toString();
+				if (isset($this->typeChecks[$typeName])) {
+					array_unshift($node->stmts, $this->buildTypeCheck($param->name, $typeName));
+					$param->type = null;
 				}
-			}
-			if ($node->returnType) {
-				$returnType = (string)$node->returnType;
-				$node->returnType = null;
-				$traverser = new NodeTraverser();
-				$traverser->addVisitor(new ReturnTypeVisitor($this->buildTypeCheck('__return', $returnType)));
-				$node->stmts = $traverser->traverse($node->stmts);
 			}
 		}
 	}
