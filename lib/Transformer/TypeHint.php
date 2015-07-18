@@ -23,7 +23,7 @@ class TypeHint implements TransformerInterface {
 	 * @return string[]
 	 */
 	public function getTypes() {
-		return ['Stmt_ClassMethod'];
+		return ['Stmt_ClassMethod', 'Stmt_Function', 'Expr_Closure'];
 	}
 
 	/**
@@ -48,7 +48,10 @@ class TypeHint implements TransformerInterface {
 	}
 
 	public function apply(Node $node) {
-		if ($node instanceof Node\Stmt\ClassMethod) {
+		if ($node instanceof Node\Stmt\ClassMethod ||
+			$node instanceof Node\Stmt\Function_ ||
+			$node instanceof Node\Expr\Closure
+		) {
 			foreach ($node->params as $param) {
 				if ($param->type) {
 					$typeName = $param->type->toString();
