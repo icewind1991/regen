@@ -3,6 +3,8 @@
 namespace Regen\Transformer\Generator;
 
 use PhpParser\Node;
+use PhpParser\NodeTraverser;
+use Regen\Transformer\HasChildNodeVisitor;
 
 class StatementGroupTransformer {
 	/**
@@ -43,14 +45,7 @@ class StatementGroupTransformer {
 		$counter = 0;
 		foreach ($statements as $statement) {
 			$result[$counter][] = $statement;
-			if (
-				$statement instanceof Node\Stmt\If_ ||
-				$statement instanceof Node\Stmt\While_ ||
-				$statement instanceof Node\Expr\Yield_ ||
-				$statement instanceof Node\Stmt\Break_ ||
-				$statement instanceof Node\Stmt\Switch_ ||
-				$statements instanceof Node\Stmt\Continue_
-			) {
+			if ($this->hasYield($statement)) {
 				$counter++;
 				$result[$counter] = [];
 			}
@@ -147,6 +142,22 @@ class StatementGroupTransformer {
 	protected function setNextSiblings($groups) {
 		for ($i = 0; ($i < count($groups) - 1); $i++) {
 			$groups[$i]->nextSibling = $groups[$i + 1];
+		}
+	}
+
+	protected function hasYield(Node $node) {
+		if ($node instanceof Node\Expr\Yield_) {
+			return true;
+		} else {
+			$traverser = new NodeTraverser();
+			$yieldVisitor = new HasChildNodeVisitor('Expr_Yield', ['Stmt_Function', 'Expr_Closure']);
+			$breakVisitor = new HasChildNodeVisitor('Stmt_Break', ['Stmt_Function', 'Expr_Closure']);
+			$continueVisitor = new HasChildNodeVisitor('Stmt_Continue', ['Stmt_Function', 'Expr_Closure']);
+			$traverser->addVisitor($yieldVisitor);
+			$traverser->addVisitor($breakVisitor);
+			$traverser->addVisitor($continueVisitor);
+			$traverser->traverse([$node]);
+			return $yieldVisitor->exists() || $breakVisitor->exists() || $continueVisitor->exists();
 		}
 	}
 }

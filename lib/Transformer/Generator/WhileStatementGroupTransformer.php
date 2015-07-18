@@ -19,7 +19,7 @@ class WhileStatementGroupTransformer extends StatementGroupTransformer {
 		}
 		$childStatements = $statement->stmts;
 		array_unshift($childStatements, new Node\Stmt\If_(new Node\Expr\BooleanNot($statement->cond), [
-			'stmts' => [$loopEndStatement]
+			'stmts' => [$loopEndStatement, new Node\Stmt\Break_()]
 		]));
 		$inWhileState = $this->stateCounter->getNextState();
 		$childStatements[] = $this->getStateAssignment($inWhileState);
