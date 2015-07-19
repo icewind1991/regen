@@ -66,7 +66,7 @@ class Regen {
 	private function addTransformers($target) {
 		if ($target < self::TARGET_70) {
 			$this->addTransformer(new TypeHint());
-			$this->addTransformer(new Operators());
+			$this->addTransformer(new Operators($target));
 			$this->addTransformer(new AnonymousClasses());
 		}
 		if ($target < self::TARGET_56) {

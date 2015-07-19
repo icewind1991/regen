@@ -2,6 +2,7 @@
 
 namespace Regen\Tests\Transformer;
 
+use Regen\Regen;
 use Regen\Transformer\Operators;
 
 class CoalesceTest extends VisitorTest {
@@ -22,7 +23,7 @@ class CoalesceTest extends VisitorTest {
 		$this->skipIfVersionLowerThan('7.0.0');
 		$code = file_get_contents(__DIR__ . '/InputFiles/SingleCoalesce.php');
 		$this->assertBeforeAndAfter(
-			[$this->visitorFromTransformer(new Operators())],
+			[$this->visitorFromTransformer(new Operators(Regen::TARGET_54))],
 			$code,
 			[$a, $b]
 		);
@@ -34,7 +35,7 @@ class CoalesceTest extends VisitorTest {
 	public function testSingleCoalesceClass($a, $b, $expected) {
 		$code = file_get_contents(__DIR__ . '/InputFiles/SingleCoalesce.php');
 		$this->assertCodeResult(
-			[$this->visitorFromTransformer(new Operators())],
+			[$this->visitorFromTransformer(new Operators(Regen::TARGET_54))],
 			$code,
 			[$a, $b],
 			$expected
@@ -58,7 +59,7 @@ class CoalesceTest extends VisitorTest {
 		$this->skipIfVersionLowerThan('7.0.0');
 		$code = file_get_contents(__DIR__ . '/InputFiles/MultipleCoalesce.php');
 		$this->assertBeforeAndAfter(
-			[$this->visitorFromTransformer(new Operators())],
+			[$this->visitorFromTransformer(new Operators(Regen::TARGET_54))],
 			$code,
 			[$a, $b, $c]
 		);
@@ -70,7 +71,7 @@ class CoalesceTest extends VisitorTest {
 	public function testMultipleCoalesce($a, $b, $c, $expected) {
 		$code = file_get_contents(__DIR__ . '/InputFiles/MultipleCoalesce.php');
 		$this->assertCodeResult(
-			[$this->visitorFromTransformer(new Operators())],
+			[$this->visitorFromTransformer(new Operators(Regen::TARGET_54))],
 			$code,
 			[$a, $b, $c],
 			$expected
@@ -95,7 +96,7 @@ class CoalesceTest extends VisitorTest {
 		$this->skipIfVersionLowerThan('7.0.0');
 		$code = file_get_contents(__DIR__ . '/InputFiles/ArrayCoalesce.php');
 		$this->assertBeforeAndAfter(
-			[$this->visitorFromTransformer(new Operators())],
+			[$this->visitorFromTransformer(new Operators(Regen::TARGET_54))],
 			$code,
 			[$a, $b, $c]
 		);
@@ -107,7 +108,7 @@ class CoalesceTest extends VisitorTest {
 	public function testArraySingleCoalesceClass($a, $b, $c, $expected) {
 		$code = file_get_contents(__DIR__ . '/InputFiles/ArrayCoalesce.php');
 		$this->assertCodeResult(
-			[$this->visitorFromTransformer(new Operators())],
+			[$this->visitorFromTransformer(new Operators(Regen::TARGET_54))],
 			$code,
 			[$a, $b, $c],
 			$expected
