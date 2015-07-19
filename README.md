@@ -32,5 +32,9 @@ Note: only classes loadable by the composer autoloaded can be regenerated.
  - scalar typehints for `integer`, `float`, `string` and `boolean`
  - spaceship (`<=>`) and null-coalesce operator (`??`)
  - annonymous classes
+- php5.6
+ - pow operator (`**`)
+ - variadic functions
+ - argument unpacking
 - php5.5
  - limited support for generators
